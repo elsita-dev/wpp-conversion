@@ -1,0 +1,16 @@
+{
+  "compatibility_date": "2025-04-01",
+  "main": "src/index.ts",
+  "name": "wpp-conversion",
+  "upload_source_maps": true,
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_id": "738a650a-b84b-4555-8ed0-156feef511b8",
+      "database_name": "wpp"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}
