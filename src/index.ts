@@ -2,7 +2,9 @@ export interface Env {
   DB: D1Database;
 }
 
-function extractUUID(text: string): string | null {
+function extractUUID(text: string | undefined | null): string | null {
+  if (typeof text !== "string") return null;
+
   const uuidRegex =
     /\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b/i;
   const match = text.match(uuidRegex);
