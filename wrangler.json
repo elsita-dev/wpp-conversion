@@ -6,8 +6,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_id": "738a650a-b84b-4555-8ed0-156feef511b8",
-      "database_name": "wpp"
+      "database_name": "d1-tracking",
+      "database_id": "7068903d-1c8a-4d3d-9db3-d378e494e3bf"
     }
   ],
   "observability": {
