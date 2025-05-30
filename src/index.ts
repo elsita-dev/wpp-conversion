@@ -33,7 +33,7 @@ export default {
         const { results } = await env.DB.prepare(
           `
           SELECT id, business_name, conversion 
-          FROM conversions 
+          FROM Leads 
           WHERE conversion_id = ? LIMIT 1
         `
         )
