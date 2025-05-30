@@ -16,50 +16,55 @@ export default {
     const pathname = new URL(url).pathname;
 
     if (method === "POST" && pathname === "/webhook") {
-      const body = await request.json();
-      console.log({ body });
+      try {
+        const body = await request.json();
+        console.log("Incoming body:", JSON.stringify(body));
 
-      const message = body?.text;
-      const contactTitle = body?.contact?.channel?.title;
-      const uuid = extractUUID(message);
+        const message = body?.payload?.text;
+        const contactTitle = body?.payload?.contact?.channel?.title; // e.g., "API ASTRO 3"
+        const uuid = extractUUID(message);
+        console.log({ uuid });
 
-      if (!uuid || !contactTitle) {
-        return new Response("ok", { status: 200 });
-      }
+        if (!uuid || !contactTitle) {
+          return new Response("Missing UUID or contact title", { status: 200 });
+        }
 
-      // Buscar fila en la base de datos
-      const { results } = await env.DB.prepare(
-        `
-        SELECT id, business_name, conversion 
-        FROM conversions 
-        WHERE conversion_id = ? LIMIT 1
-      `
-      )
-        .bind(uuid)
-        .all();
-
-      const match = results[0];
-
-      if (
-        match &&
-        match.business_name === contactTitle &&
-        match.conversion === 0
-      ) {
-        // Actualizar la conversión a 1
-        await env.DB.prepare(
+        // Buscar coincidencia exacta por UUID
+        const { results } = await env.DB.prepare(
           `
-          UPDATE conversions 
-          SET conversion = 1 
-          WHERE id = ?
+          SELECT id, business_name, conversion 
+          FROM conversions 
+          WHERE conversion_id = ? LIMIT 1
         `
         )
-          .bind(match.id)
-          .run();
+          .bind(uuid)
+          .all();
 
-        return new Response("Conversion updated", { status: 201 });
+        const match = results[0];
+
+        if (
+          match &&
+          match.business_name.toLowerCase() === contactTitle.toLowerCase() &&
+          match.conversion === 0
+        ) {
+          await env.DB.prepare(
+            `
+            UPDATE conversions 
+            SET conversion = 1 
+            WHERE id = ?
+          `
+          )
+            .bind(match.id)
+            .run();
+
+          return new Response("Conversion updated", { status: 201 });
+        }
+
+        return new Response("No update needed", { status: 200 });
+      } catch (err) {
+        console.error("Error handling webhook:", err);
+        return new Response("Internal Server Error", { status: 500 });
       }
-
-      return new Response("ok", { status: 200 });
     }
 
     return new Response("Not found", { status: 404 });
