@@ -51,7 +51,7 @@ export default {
             `
             UPDATE conversions 
             SET conversion = 1 
-            WHERE id = ?
+            WHERE conversion_id = ?
           `
           )
             .bind(match.id)
