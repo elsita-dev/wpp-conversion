@@ -49,7 +49,7 @@ export default {
         ) {
           await env.DB.prepare(
             `
-            UPDATE conversions 
+            UPDATE Leads 
             SET conversion = 1 
             WHERE conversion_id = ?
           `
