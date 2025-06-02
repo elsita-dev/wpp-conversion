@@ -58,7 +58,7 @@ export default {
 
         if (
           match &&
-          match.business_name.toLowerCase() === contactTitle.toLowerCase() &&
+          /* match.business_name.toLowerCase() === contactTitle.toLowerCase() && */
           match.conversion === 0
         ) {
           await env.DB.prepare(
