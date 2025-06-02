@@ -21,9 +21,23 @@ export default {
         console.log("Incoming body:", JSON.stringify(body));
 
         const message = body?.payload?.text;
-        const contactTitle = body?.payload?.contact?.channel?.title; // e.g., "API ASTRO 3"
+        const phone_number = body?.payload?.from;
+        const contactTitle = body?.payload?.contact?.channel?.title;
+        const attachments = body?.payload?.attachments;
         const uuid = extractUUID(message);
         console.log({ uuid });
+
+        if (attachments) {
+          await env.DB.prepare(
+            `
+            UPDATE Leads 
+            SET recharges = recharges + 1 
+            WHERE phone_number = ?
+            `
+          )
+            .bind(phone_number)
+            .run();
+        }
 
         if (!uuid || !contactTitle) {
           return new Response("Missing UUID or contact title", { status: 200 });
@@ -50,11 +64,12 @@ export default {
           await env.DB.prepare(
             `
             UPDATE Leads 
-            SET conversion = 1 
+            SET conversion = 1,
+                phone_number = ? 
             WHERE conversion_id = ?
           `
           )
-            .bind(uuid)
+            .bind(phone_number, uuid)
             .run();
 
           return new Response("Conversion updated", { status: 201 });
