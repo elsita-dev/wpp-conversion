@@ -54,7 +54,7 @@ export default {
             WHERE conversion_id = ?
           `
           )
-            .bind(match.id)
+            .bind(uuid)
             .run();
 
           return new Response("Conversion updated", { status: 201 });
